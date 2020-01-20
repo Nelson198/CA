@@ -5,7 +5,7 @@
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 
-\usepackage{xcolor}
+\usepackage{hyperref}
 
 % Encoding
 %--------------------------------------
@@ -37,9 +37,9 @@
 	\begin{tabular}{ll}
 		\textbf{Grupo}
 		\\\hline
-		PG41090 & João Ribeiro Imperadeiro
-		\\
 		PG41081 & José Alberto Martins Boticas
+		\\
+		PG41090 & João Ribeiro Imperadeiro
 		\\
 		PG41091 & Nelson José Dias Teixeira
 	\end{tabular}
@@ -56,7 +56,8 @@
 % Resumo
 
 \begin{abstract}
-	Este projeto de avaliação relativo à unidade curricular de Computação Avançada consiste, globalmente, em 
+	Este projeto de avaliação relativo à unidade curricular de Computação Avançada consiste, globalmente, em instalar e configurar um \textit{cluster} de \textit{HTCondor} 
+	com pelo 3 nós e utilizar o mesmo na resolução de uma tarefa de processamento.
 \end{abstract}
 
 % Índice
@@ -67,26 +68,37 @@
 
 \chapter{Introdução} \label{intro}
 \large{
-    \section{Apresentação da base de dados escolhida}
+	De forma sucinta, neste trabalho prático é pedida a implementação de um \textit{cluster} \textit{HTCondor} para a realização de tarefas de processamento de grandes volumes de 
+	dados ou de elevada complexidade. Para além disso, como seria de esperar, é necessário especificar o sistema desenvolvido pelos elementos deste grupo bem como aspetos adicionais 
+	associados ao mesmo.
 	
-	\section{Contextualização}
-	
-	\section{Definição das variáveis}
-	
-	\section{Objetivo de análise}
+	Neste caso em concreto, é pedido algo mais específico, isto é, o desenvolvimento de uma aplicação de \textit{resizing} de video. Através deste caso, é possível mostrar o funcionamento 
+	do \textit{cluster} em questão, transformando, por exemplo, um determinado video com resolução \textit{fullHD} (1080p) na resolução \textit{SD} (720p).
+
+	A correta realização desta tarefa passa por reduzir o tempo necessário à conversão do video em causa. Como tal, é possível partir o video original em vários segmentos, fazendo a conversão 
+	de cada um destes e, no fim, juntá-los todos no video de resultado. Seguindo a sugestão do docente desta unidade curricular, foi utilizado o comando \textit{ffmpeg} para auxiliar a 
+	execução deste tipo de tarefa.
 }
 
 \chapter{Metodologia}
-    \section{Modelo adoptado}
+\large{
+	Por forma a especificar o sistema requirido, foi tomada a seguinte abordagem: ...
+}
 
 \chapter{Resultados}
+\large{
+
+}
 
 \chapter{Conclusão}
+\large{
+
+}
 
 \chapter{Webgrafia}
     \begin{itemize}
-        \item \textit{Website} indicado pela docente:
-        \par \textit{https://www.kaggle.com}
+        \item Documentação - \textbf{\textit{ffmpeg}}:
+        \par \textit{\url{https://www.ffmpeg.org/ffmpeg.html}}
     \end{itemize}
 
 \appendix
