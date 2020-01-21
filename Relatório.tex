@@ -43,9 +43,9 @@
 	\begin{tabular}{ll}
 		\textbf{Grupo}
 		\\\hline
-		PG41081 & José Alberto Martins Boticas
+		PG41080 & João Ribeiro Imperadeiro
 		\\
-		PG41090 & João Ribeiro Imperadeiro
+		PG41081 & José Alberto Martins Boticas
 		\\
 		PG41091 & Nelson José Dias Teixeira
 	\end{tabular}
@@ -79,13 +79,13 @@
 	
 	Neste caso em concreto, é pedido algo mais específico, isto é, o desenvolvimento de uma aplicação de \textit{resizing} de vídeo. Através deste caso, é possível mostrar o funcionamento do \textit{cluster} em questão, transformando, por exemplo, um determinado vídeo com resolução \textit{fullHD} (1080p) na resolução \textit{SD} (720p).
 
-	A correta realização desta tarefa passa por reduzir o tempo necessário à conversão do vídeo em causa. Como tal, é possível partir o vídeo original em vários segmentos, fazendo a conversão	de cada um destes e, no fim, juntá-los todos no vídeo de resultado. Seguindo a sugestão do docente desta unidade curricular, foi utilizado o comando \texttt{ffmpeg} para auxiliar a	execução deste tipo de tarefa.
+	A correta realização desta tarefa passa por reduzir o tempo necessário à conversão do vídeo em causa. Como tal, é possível partir o vídeo original em vários segmentos, fazendo a conversão	de cada um destes e, no fim, juntá-los todos no vídeo de resultado. Seguindo a sugestão do docente desta unidade curricular, foi utilizado o comando \textit{ffmpeg} para auxiliar a execução deste tipo de tarefa.
 }
 
 \chapter{Implementação}
 
     \section{Instalação e configuração do cluster}
-	Antes de iniciarmos o desenvolvimento da solução para a realização da tarefa proposta, foi necessário configurarmos algumas máquinas, parte integrante do nosso cluster. Para isso, recorremos ao serviço DigitalOcean, onde é possível alugar máquinas virtuais. Assim, e dado que no enunciado são pedidas, no mínimo, 3 máquinas (valor este facilmente escalável a outros números de máquinas), alugamos 3 servidores virtuais (com 1 núcleo de processamento e 1GB de memória ram), os quais interligamos recorrendo a ligações provadas fornecidas pelo serviço.
+	Antes de iniciarmos o desenvolvimento da solução para a realização da tarefa proposta, foi necessário configurarmos algumas máquinas, parte integrante do nosso \textit{cluster}. Para isso, recorremos ao serviço \textit{DigitalOcean}, onde é possível alugar máquinas virtuais. Assim, e dado que no enunciado são pedidas, no mínimo, 3 máquinas (valor este facilmente escalável a outros números de máquinas), alugamos 3 servidores virtuais (com 1 núcleo de processamento e 1\textit{GB} de memória \textit{ram}), os quais interligamos recorrendo a ligações provadas fornecidas pelo serviço.
 	
 	Posto isto, fizemos a configuração inicial das máquinas, utilizando o sistema operativo \texttt{CentOS}, na versão 7, e seguimos os passos de instalação do \texttt{HTCondor}, ferramenta para criação de clusters, tal como indicado pelo docente num ficheiro na Dropbox.
 	Tendo em conta que num sistema \texttt{HTCondor} há a noção de \textit{master} e \textit{worker}, tomámos a decisão de criar: 1 máquina \textit{master}, que recebe os pedidos dos clientes e trata do processamento e eventual divisão de trabalho pelos \textit{workers}, devolvendo uma resposta no fim do processamento; 3 máquinas \textit{worker}, sendo que uma delas é a \textit{master}, que estão responsáveis por efetuar tarefas pedidas pelo \textit{master}.
@@ -120,19 +120,65 @@
 	
 	Passando agora às operações individuais, começamos por apresentar a de dividir o vídeo em 3 partes de igual comprimento.
 	
-	% Inserir A:sub
+	% Inserir A:
+	\small{
+		\begin{verbatim}
+			// job A:
+
+			executable = ffmpeg
+			arguments = -i fragmento.mp4 -c copy -map 0 -segment_time 3.5 -f segment input%1d.mp4
 	
-	Como podemos ver, é utilizada uma das muitas vertentes da ferramenta \texttt{ffmpeg} para dividir o vídeo, sendo que o ficheiro do vídeo (fragmento.mp4) é indicado como sendo o \textit{input}.
+			should_transfer_files = YES
+			transfer_input_files = fragmento.mp4
 	
-	De seguida, temos as 3 operações de compressão das partes do vídeo. Dado que os 3 scripts são semelhantes, apresentaremos apenas um deles.
+			when_to_transfer_output = ON_EXIT
 	
+			queue 1
+		\end{verbatim}
+	}
+	\large{
+		Como podemos ver, é utilizada uma das muitas vertentes da ferramenta \texttt{ffmpeg} para dividir o vídeo, sendo que o ficheiro do vídeo (fragmento.mp4) é indicado como sendo o \textit{input}.
+		
+		De seguida, temos as 3 operações de compressão das partes do vídeo. Dado que os 3 scripts são semelhantes, apresentaremos apenas um deles.
+	}
+
 	% Inserir B*.sub
+	\small{
+		\begin{verbatim}
+			// job B1 (semelhante para os jobs B2 e B3):
+
+			executable = ffmpeg
+			arguments = -i input0.mp4 -s 1280x720 -c:a copy output0.mp4
+
+			should_transfer_files = YES
+			transfer_input_files = input0.mp4
+
+			when_to_transfer_output = ON_EXIT
+
+			queue 1
+		\end{verbatim}
+	}
 	
 	Mais uma vez, é utilizada a ferramenta \texttt{ffmpeg}, recebendo como \textit{input} a parte correspondente a cada uma das tarefas, dependendo do \textit{worker}.
 	
 	Por fim, vem a operação de junção das 3 partes do vídeo. Como o \texttt{ffmpeg} é muito versátil, utilizamos mais uma das suas capacidades, permitindo-nos obter o vídeo pretendido.
 	
 	% Inseror C.sub
+	\small{
+		\begin{verbatim}
+			// job C
+
+			executable = ffmpeg
+			arguments = -f concat -safe 0 -i outputs.txt -c copy compressed.mp4
+
+			should_transfer_files = YES
+			transfer_input_files = outputs.txt, output0.mp4, output1.mp4, output2.mp4
+
+			when_to_transfer_output = ON_EXIT
+
+			queue 1
+		\end{verbatim}
+	}
 	
 	Este script recebe como \textit{inputs} um ficheiro contendo os caminhos para as diferentes partes do vídeo e as 3 partes do vídeo em si.
 
@@ -148,8 +194,5 @@
         \item Documentação - \textbf{\textit{ffmpeg}}:
         \par \textit{\url{https://www.ffmpeg.org/ffmpeg.html}}
     \end{itemize}
-
-\appendix
-\chapter{Observações}
 
 \end{document}
