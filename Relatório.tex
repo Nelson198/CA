@@ -9,6 +9,7 @@
 
 % Images package
 \usepackage{graphicx}
+\usepackage{subfig}
 
 % Encoding
 %--------------------------------------
@@ -88,15 +89,26 @@
     \section{Instalação e configuração do cluster}
 	% Falar dos 3 nós; configuração de uma máquina master e duas workers; ...
 	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[scale=0.5]{Arquitetura-HTCondor.png}
-		\caption{Arquitetura do sistema \textit{HTCondor}}
-		\label{}
-	\end{figure}
     
     \section{Realização da tarefa}
     % Explicar os scripts
+
+	\begin{figure}
+		\centering
+			\begin{subfigure}{0.4\textwidth}
+				\centering
+				\includegraphics[width=.4\linewidth]{DAG.png}
+				\caption{Código da tarefa}
+				\label{fig:sub1}
+			\end{subfigure}%
+		
+			\begin{subfigure}{0.4\textwidth}
+				\centering
+				\includegraphics[width=.4\linewidth]{Arquitetura-HTCondor.png}
+				\caption{Desenho da tarefa}
+				\label{fig:sub2}
+			\end{subfigure}
+	\end{figure}
 
 \chapter{Conclusão}
 \large{
