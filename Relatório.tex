@@ -7,6 +7,9 @@
 
 \usepackage{hyperref}
 
+% Images package
+\usepackage{graphicx}
+
 % Encoding
 %--------------------------------------
 \usepackage[T1]{fontenc}
@@ -83,7 +86,14 @@
 \chapter{Implementação}
 
     \section{Instalação e configuração do cluster}
-    % Falar dos 3 nós; configuração de uma máquina master e duas workers; ...
+	% Falar dos 3 nós; configuração de uma máquina master e duas workers; ...
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{Arquitetura-HTCondor.png}
+		\caption{Arquitetura do sistema \textit{HTCondor}}
+		\label{}
+	\end{figure}
     
     \section{Realização da tarefa}
     % Explicar os scripts
