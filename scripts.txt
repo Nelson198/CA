@@ -3,7 +3,7 @@ executable = ffmpeg
 arguments = -f concat -safe 0 -i outputs.txt -c copy compressed.mp4
 
 should_transfer_files = YES
-transfer_input_files = outputs.mp4, output0.mp4, output1.mp4, output2.mp4
+transfer_input_files = outputs.txt, output0.mp4, output1.mp4, output2.mp4
 
 when_to_transfer_output = ON_EXIT
 
