@@ -87,15 +87,15 @@
     \section{Instalação e configuração do cluster}
 	Antes de iniciarmos o desenvolvimento da solução para a realização da tarefa proposta, foi necessário configurarmos algumas máquinas, parte integrante do nosso \textit{cluster}. Para isso, recorremos ao serviço \textit{DigitalOcean}, onde é possível alugar máquinas virtuais. Assim, e dado que no enunciado são pedidas, no mínimo, 3 máquinas (valor este facilmente escalável a outros números de máquinas), alugamos 3 servidores virtuais (com 1 núcleo de processamento e 1\textit{GB} de memória \textit{ram}), os quais interligamos recorrendo a ligações provadas fornecidas pelo serviço.
 	
-	Posto isto, fizemos a configuração inicial das máquinas, utilizando o sistema operativo \texttt{CentOS}, na versão 7, e seguimos os passos de instalação do \texttt{HTCondor}, ferramenta para criação de clusters, tal como indicado pelo docente num ficheiro na Dropbox.
+	Posto isto, fizemos a configuração inicial das máquinas, utilizando o sistema operativo \texttt{CentOS}, na versão 7, e seguimos os passos de instalação do \texttt{HTCondor}, ferramenta para criação de clusters, tal como indicado pelo docente num ficheiro na \textit{Dropbox}.
 	Tendo em conta que num sistema \texttt{HTCondor} há a noção de \textit{master} e \textit{worker}, tomámos a decisão de criar: 1 máquina \textit{master}, que recebe os pedidos dos clientes e trata do processamento e eventual divisão de trabalho pelos \textit{workers}, devolvendo uma resposta no fim do processamento; 3 máquinas \textit{worker}, sendo que uma delas é a \textit{master}, que estão responsáveis por efetuar tarefas pedidas pelo \textit{master}.
 	
 	Desta forma, o nosso cluster está configurado e pronto a receber tarefas para executar.
     
     \section{Realização da tarefa}
-    Tendo o cluster configurado, o passo seguinte foi o desenvolvimento dos scripts que nos permitem executar a tarefa proposta. Esta tarefa consiste na receção de um vídeo na resolução 1080p de um utilizador pelo \textit{master}. Por sua vez, o \textit{master} procede à sua divisão em 3 partes iguais, enviando cada uma delas para cada um dos \textit{workers}. Estes \textit{workers} comprimem a sua parte do vídeo para a resolução 720p, tarefa esta que demora uma quantidade significativa de tempo, o que a torna ideal para este tipo de sistema de cluster. De seguida, os \textit{workers} enviam a sua parte do vídeo, já comprimida, para o \textit{master}, sendo que este junta todas as partes e devolve o vídeo comprimido ao cliente.
+    Tendo o cluster configurado, o passo seguinte foi o desenvolvimento dos \textit{scripts} que nos permitem executar a tarefa proposta. Esta tarefa consiste na receção de um vídeo na resolução 1080p de um utilizador pelo \textit{master}. Por sua vez, o \textit{master} procede à sua divisão em 3 partes iguais, enviando cada uma delas para cada um dos \textit{workers}. Estes \textit{workers} comprimem a sua parte do vídeo para a resolução 720p, tarefa esta que demora uma quantidade significativa de tempo, o que a torna ideal para este tipo de sistema de cluster. De seguida, os \textit{workers} enviam a sua parte do vídeo, já comprimida, para o \textit{master}, sendo que este junta todas as partes e devolve o vídeo comprimido ao cliente.
     
-    Para atingirmos este objetivo, proposto no enunciado, decidimos desenvolver vários scripts. O primeiro deles é um script DAG, que será submetido com o comando \textit{condor\_submit\_dag} do \texttt{HTCondor}, e especifica a ordem das operações.
+    Para atingirmos este objetivo, proposto no enunciado, decidimos desenvolver vários \textit{scripts}. O primeiro deles é um \textit{script DAG}, que será submetido com o comando \textit{condor\_submit\_dag} do \texttt{HTCondor}, e especifica a ordem das operações.
 
 	\begin{figure}[H]
 		\centering
@@ -114,11 +114,12 @@
 		\caption{Planificação da tarefa}
 		\label{fig:dag}
 	\end{figure}
-
-	No código acima, juntamente com o respetivo diagrama, podemos ver o nosso script, que indica ao \texttt{HTCondor} a ordem e a dependência das operações a realizar na tarefa. Em primeiro lugar, especificamos o trabalho A, onde o vídeo é divido em 3 partes iguais. De seguida, definimos 3 trabalhos, o B1, B2 e B3, que correspondem ao processo de compressão de cada uma das 3 partes do vídeo. 
-	Como especificado no script, estes 3 trabalhos dependem do trabalho A, pois é necessário as 3 partes existirem antes de os \textit{workers} as poderem comprimir. Por último, é definido o trabalho C, dependente do B1, B2 e B3, que corresponde ao processo de junção das 3 partes comprimidas num só vídeo.
-	
-	Passando agora às operações individuais, começamos por apresentar a de dividir o vídeo em 3 partes de igual comprimento.
+	\large{
+		No código acima, juntamente com o respetivo diagrama, podemos ver o nosso \textit{script}, que indica ao \texttt{HTCondor} a ordem e a dependência das operações a realizar na tarefa. Em primeiro lugar, especificamos o trabalho \textit{A}, onde o vídeo é divido em 3 partes iguais. De seguida, definimos 3 trabalhos, o \textit{B1}, \textit{B2} e \textit{B3}, que correspondem ao processo de compressão de cada uma das 3 partes do vídeo. 
+		Como especificado no \textit{script}, estes 3 trabalhos dependem do trabalho \textit{A}, pois é necessário as 3 partes existirem antes de os \textit{workers} as poderem comprimir. Por último, é definido o trabalho \textit{C}, dependente do \textit{B1}, \textit{B2} e \textit{B3}, que corresponde ao processo de junção das 3 partes comprimidas num só vídeo.
+		
+		Passando agora às operações individuais, começamos por apresentar a de dividir o vídeo em 3 partes de igual comprimento.
+	}
 	
 	% Inserir A:
 	\small{
@@ -158,10 +159,11 @@
 			queue 1
 		\end{verbatim}
 	}
-	
-	Mais uma vez, é utilizada a ferramenta \texttt{ffmpeg}, recebendo como \textit{input} a parte correspondente a cada uma das tarefas, dependendo do \textit{worker}.
-	
-	Por fim, vem a operação de junção das 3 partes do vídeo. Como o \texttt{ffmpeg} é muito versátil, utilizamos mais uma das suas capacidades, permitindo-nos obter o vídeo pretendido.
+	\large{
+		Mais uma vez, é utilizada a ferramenta \texttt{ffmpeg}, recebendo como \textit{input} a parte correspondente a cada uma das tarefas, dependendo do \textit{worker}.
+		
+		Por fim, vem a operação de junção das 3 partes do vídeo. Como o \texttt{ffmpeg} é muito versátil, utilizamos mais uma das suas capacidades, permitindo-nos obter o vídeo pretendido.
+	}
 	
 	% Inseror C.sub
 	\small{
@@ -179,20 +181,24 @@
 			queue 1
 		\end{verbatim}
 	}
-	
-	Este script recebe como \textit{inputs} um ficheiro contendo os caminhos para as diferentes partes do vídeo e as 3 partes do vídeo em si.
+	\large{
+		Este \textit{script} recebe como \textit{inputs} um ficheiro contendo os caminhos para as diferentes partes do vídeo e as 3 partes do vídeo em si.
+	}
 
 \chapter{Conclusão}
 \large{
 	Para concluir, foi possível, de uma forma muito simples, configurarmos um cluster virtual utilizando o \texttt{HTCondor}, de forma a comprimir um vídeo, tarefa naturalmente muito exigente do ponto de vista computacional, ao dividirmos o trabalho por 3 máquinas diferente, acelerando este processo.
-	Assim, foi-nos possível pormos em prática os conhecimentos adquiridos na parte de HTC da Unidade Curricular de Computação Avançada, o que nos permitiu experimentar com máquinas virtuais na cloud e as ferramentas \texttt{HTCloud}/\texttt{ffmpeg}.
+	Assim, foi-nos possível pormos em prática os conhecimentos adquiridos na parte de \textit{HTC} da unidade curricular de Computação Avançada, o que nos permitiu experimentar com máquinas virtuais na \textit{cloud} e as ferramentas \texttt{HTCloud}/\texttt{ffmpeg}.
 	Por fim, consideramos que a nossa resolução foi muito positiva, ao utilizarmos diversas funcionalidades das ferramentas propostas e ainda termos utilizado o ambiente de máquinas virtuais do \texttt{HTCondor}.
 }
 
 \chapter{Webgrafia}
     \begin{itemize}
         \item Documentação - \textbf{\textit{ffmpeg}}:
-        \par \textit{\url{https://www.ffmpeg.org/ffmpeg.html}}
+		\par \textit{\url{https://www.ffmpeg.org/ffmpeg.html}}
+		
+		\item Configuração do \textit{cluster}:
+		\par \textit{\url{https://tinyurl.com/sr65bna}}
     \end{itemize}
 
 \end{document}
