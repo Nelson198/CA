@@ -1,0 +1,63 @@
+########### concat.sub
+executable = ffmpeg
+arguments = -f concat -safe 0 -i outputs.txt -c copy compressed.mp4
+
+should_transfer_files = YES
+transfer_input_files = outputs.mp4, output0.mp4, output1.mp4, output2.mp4
+
+when_to_transfer_output = ON_EXIT
+
+queue 1
+
+######### divide.sub
+executable = ffmpeg
+arguments = -i fragmento.mp4 -c copy -map 0 -segment_time 3.5 -f segment input%1d.mp4
+
+should_transfer_files = YES
+transfer_input_files = fragmento.mp4
+
+when_to_transfer_output = ON_EXIT
+
+queue 1
+
+######### downscale1.sub
+executable = ffmpeg
+arguments = -i input0.mp4 -s 1280x720 -c:a copy output0.mp4
+
+should_transfer_files = YES
+transfer_input_files = input0.mp4
+
+when_to_transfer_output = ON_EXIT
+
+queue 1
+
+######### downscale2.sub
+executable = ffmpeg
+arguments = -i input1.mp4 -s 1280x720 -c:a copy output1.mp4
+
+should_transfer_files = YES
+transfer_input_files = input1.mp4
+
+when_to_transfer_output = ON_EXIT
+
+queue 1
+
+######### downscale3.sub
+executable = ffmpeg
+arguments = -i input2.mp4 -s 1280x720 -c:a copy output2.mp4
+
+should_transfer_files = YES
+transfer_input_files = input2.mp4
+
+when_to_transfer_output = ON_EXIT
+
+queue 1
+
+######## job.dag
+JOB A divide.sub
+JOB B1 downscale1.sub
+JOB B2 downscale2.sub
+JOB B3 downscale3.sub
+JOB C concat.sub
+PARENT A CHILD B1 B2 B3
+PARENT B1 B2 B3 CHILD C
